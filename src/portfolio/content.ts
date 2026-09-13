@@ -196,10 +196,17 @@ export const FOOTER_LINKS = [
   },
 ];
 
-/** Hero portrait pair. See docs/hero-image-prompts.md before replacing these. */
+/**
+ * Hero portrait pair. See docs/hero-image-prompts.md before replacing these.
+ *
+ * Paths go through BASE_URL so the site works when it is served from a
+ * sub-path or a relative base, not just from a domain root.
+ */
+const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 export const PORTRAIT = {
   /** Always visible, and the page's LCP image. */
-  base: '/portrait/base.png',
+  base: asset('portrait/base.png'),
   /** Painted in under the cursor — must share the base's exact framing. */
-  reveal: '/portrait/reveal.png',
+  reveal: asset('portrait/reveal.png'),
 } as const;
