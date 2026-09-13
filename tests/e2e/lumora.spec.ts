@@ -1,7 +1,7 @@
 import { expect, test, waitForIntro } from './fixtures';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/lumora.html', { waitUntil: 'domcontentloaded' });
 });
 
 test.describe('intro loader', () => {

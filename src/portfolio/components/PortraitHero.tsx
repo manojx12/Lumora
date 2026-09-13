@@ -32,7 +32,7 @@ export function PortraitHero() {
         delay={DELAY.heroWatermark}
         config={SPRING.watermark}
         gateOnReady
-        className="pointer-events-none absolute inset-x-0 bottom-28 z-[1] text-center text-watermark leading-none font-bold text-white/40 select-none"
+        className="pointer-events-none absolute inset-x-0 bottom-28 z-[1] text-center text-watermark leading-none font-bold whitespace-nowrap text-white/40 select-none"
       >
         {PERSON.shortName}
       </Reveal>

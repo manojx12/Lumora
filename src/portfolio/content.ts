@@ -1,19 +1,19 @@
 /**
  * ============================================================================
- *  EDIT THIS FILE — it holds every word and link on the portfolio site.
+ *  EDIT THIS FILE — it holds every word and link on the site.
  *  Nothing else needs touching to make the site yours.
  * ============================================================================
  *
- * The name and role below were taken from this repository's git identity as a
- * starting point. Change them.
+ * `role` and the copy below are a starting point, not a decision — change them
+ * to match how you actually describe your work.
  */
 
 import type { NavItem } from '../data/content';
 
 export const PERSON = {
-  name: 'Manoj Bansode',
-  /** Shown as the giant hero watermark — keep it short. */
-  shortName: 'MANOJ',
+  name: 'Manoj Dev',
+  /** The giant hero and footer watermark. Keep it short — it renders at 13rem. */
+  shortName: 'MANOJ DEV',
   role: 'Product Designer & Front-End Engineer',
   location: 'Pune, India — working worldwide',
   availability: 'Available for new work',

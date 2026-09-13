@@ -9,11 +9,11 @@ export default defineConfig({
     target: 'es2022',
     cssTarget: 'chrome111',
     rollupOptions: {
-      // Two sites, one design system: the studio landing page and the personal
-      // portfolio, each with its own entry.
+      // Two sites, one design system. The personal site is the root; the studio
+      // landing page keeps its own entry alongside it.
       input: {
         index: resolve(import.meta.dirname, 'index.html'),
-        portfolio: resolve(import.meta.dirname, 'portfolio.html'),
+        lumora: resolve(import.meta.dirname, 'lumora.html'),
       },
     },
   },

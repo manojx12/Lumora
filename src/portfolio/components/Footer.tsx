@@ -74,7 +74,7 @@ export function Footer() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -bottom-6 z-0 text-center text-watermark leading-none font-bold text-white/5 select-none"
+        className="pointer-events-none absolute inset-x-0 -bottom-6 z-0 text-center text-watermark leading-none font-bold whitespace-nowrap text-white/5 select-none"
       >
         {PERSON.shortName}
       </div>

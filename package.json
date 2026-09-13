@@ -1,9 +1,9 @@
 {
-  "name": "lumora",
+  "name": "manoj-dev",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Lumora — Independent Design & Engineering Studio",
+  "description": "Manoj Dev \u2014 personal site, with the Lumora studio landing page alongside it",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

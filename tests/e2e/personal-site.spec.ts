@@ -1,13 +1,22 @@
 import { expect, test, waitForIntro } from './fixtures';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/portfolio.html', { waitUntil: 'domcontentloaded' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
 });
 
 test('runs the intro and releases the scroll lock', async ({ page }) => {
   await expect(page.getByTestId('loader-count')).toHaveText(/^\d{3}$/);
   await waitForIntro(page);
   await expect.poll(() => page.evaluate(() => document.documentElement.style.overflow)).toBe('');
+});
+
+test('carries the site name through the page', async ({ page }) => {
+  await expect(page).toHaveTitle(/^Manoj Dev — /);
+
+  await waitForIntro(page);
+  await expect(page.getByRole('banner').getByText('Manoj Dev')).toBeVisible();
+  await expect(page.getByRole('contentinfo').getByText('Manoj Dev').first()).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toContainText(/© \d{4} Manoj Dev/);
 });
 
 test('reveals the headline as three fixed lines', async ({ page }) => {
