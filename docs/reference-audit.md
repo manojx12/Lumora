@@ -1,585 +1,790 @@
 # MAISON VELOR — Phase 0: Reference & Project Audit
 
-**Status:** Complete — awaiting Gate 0 approval
+**Status:** Complete (revision 2 — full reference material received)
 **Date:** 2026-09-13
 **Branch:** `claude/compassionate-cannon-nx3443`
-**Author:** Claude (Phase 0 audit, no application code written)
+**Gate:** 0 — awaiting approval
+
+> **Revision note.** Revision 1 was written without the reference material, which had
+> not reached the session. Both documents have since been supplied and fully read.
+> This revision replaces it. Roughly three-quarters of what revision 1 listed as
+> UNKNOWN is now measured fact.
 
 ---
 
-## 0. Evidence provenance — read this first
+## 0. Sources and confidence
 
-This audit separates what is **evidence** from what is **inference**. The distinction
-matters because the primary source document is not present in this session.
+### 0.1 What I now hold
 
-### 0.1 What I was able to inspect
+| Source | Status |
+| --- | --- |
+| **`Reverse-engineering specification · reference analysis`** (PDF, 9 pp, 243 KB) | ✅ Read in full. Motion, layout, scroll and state forensics for `obsidianassembly.com` across all five routes. |
+| **`The Obsidian Assembly — UI Implementation Guidance`** (MD, v1.0-draft, 31 Aug 2026) | ✅ Read in full. WCAG 2.2 AA component and token specification. |
+| Existing repository (`manojx12/Lumora`) | ✅ Audited |
+| Live reference site | ❌ Blocked by egress proxy — not needed now; both documents are measured, not inferred |
+| Reference screenshots | ❌ None supplied. **This remains the one real gap** — see §0.4 |
 
-| Source | Available? | Notes |
-| --- | --- | --- |
-| Existing repository (`manojx12/Lumora`) | ✅ Yes | Fully inspected — see §1 |
-| Reference-analysis PDF ("Reverse-engineering specification · reference analysis") | ❌ **Not present** | No PDF, no attachment, nothing on disk anywhere under `/home`, `/tmp` or `/mnt` |
-| Reference screenshot(s) of Obsidian Assembly | ❌ **Not present** | Only files on disk are `public/portrait/{base,reveal}.png`, the project's own placeholders |
-| Live Obsidian Assembly website | ❌ **Blocked** | Network egress proxy blocks `theobsidianassembly.com`, `obsidianassembly.com`, `awwwards.com`, `landing.love` |
-| `CLAUDE.md` | ❌ Does not exist | Not in this repo or anywhere on the filesystem |
-| `DESIGN.md` | ❌ Does not exist | — |
-| `awesome-design.md` | ❌ Does not exist | — |
-| Project `README.md` | ✅ Yes | Thorough; effectively the current design-system documentation |
-| `docs/hero-image-prompts.md` | ✅ Yes | The only pre-existing doc |
+The PDF states its own provenance: 5 routes, 996 sha256-pinned artifacts, 73.1 MiB of
+evidence, baseline 1440×900, *"Every value here was read from a live browser or an
+extracted bundle. Nothing was inferred from appearance."* It also declares itself
+specification-only, with no implementation produced.
 
-### 0.2 What I did confirm about the reference brand
-
-A web search confirms **The Obsidian Assembly** exists and is a recognised
-site — it was an Awwwards Site of the Day in April 2026 — but every page
-describing it (Awwwards, landing.love) and the site itself are blocked by this
-session's egress policy. I could not open a single pixel of it.
-
-Sources (titles/URLs returned by search; pages themselves unreachable from here):
-- [The Obsidian Assembly — Awwwards SOTD](https://www.awwwards.com/sites/the-obsidian-assembly)
-- [The Obsidian Assembly — landing.love](https://www.landing.love/sites/obsidianassembly/)
-
-### 0.3 Therefore: the brief itself is the reference evidence
-
-Your build prompt quotes measured findings from the PDF directly. Those quotes are
-the **only** reference evidence I hold. They are reproduced verbatim in §2 and
-labelled **RELAYED** — meaning: stated as measured in your brief, not independently
-verified by me.
-
-**I have invented no reference behaviour.** Anything in this document not traceable
-to your brief or to the repository is labelled inference and marked as such.
-
-### 0.4 Confidence key
+### 0.2 Confidence key
 
 | Label | Meaning |
 | --- | --- |
-| **RELAYED** | Quoted as measured fact in your build prompt. Trustworthy as a design input, unverified by me. |
-| **CONFIRMED** | I verified it myself in this session (repo contents, command output). |
-| **INFERRED** | My reasoning from RELAYED/CONFIRMED facts. Reasonable, not evidence. |
-| **UNKNOWN** | Genuinely not known. Not guessed. |
+| **MEASURED** | Read from a live browser or extracted bundle, per the PDF's own evidence boundary (§09), or verified against the live site per the guidance's §1.2. |
+| **SPECIFIED** | A rule the guidance asserts as policy rather than a measurement (its **must** / **should** / **PROPOSED** items). |
+| **DERIVED** | My arithmetic or reasoning over values the documents state. Re-verifiable; shown, not asserted. |
+| **CONFIRMED** | I verified it in this session (repo contents, command output). |
+| **UNKNOWN** | Not known. Not guessed. |
+
+### 0.3 The two documents disagree, and the disagreement is informative
+
+They were written from different token exports. The PDF read **102 CSS custom
+properties** from the live bundles; the guidance was handed a **5-value colour
+export**. Reconciling them resolves all three of the guidance's P0 blockers — see
+§4.3. That reconciliation is the most useful thing in this audit and it is not in
+either document on its own.
+
+### 0.4 What is still genuinely UNKNOWN
+
+Both documents are forensic, not visual. Neither contains a screenshot, an image, a
+crop, or a description of what any section *looks like*.
+
+- ❓ **Visual composition of every section.** I have exact geometry (heights, offsets,
+  positions, sticky targets) but no pixels. I know `c-welcome` is 1176 px tall and
+  carries `-inview`; I do not know what is in it.
+- ❓ Image aspect ratios and art direction
+- ❓ What the WebGL relief background actually renders
+- ❓ Type colour/weight assignment per section
+- ❓ `/places` runtime media and its scroll sweep — the PDF explicitly documents these
+  as **not captured** (CDP `Runtime.evaluate` timed out across fresh sessions, both
+  viewports, 300/600/900 s budgets) and states *"Neither artifact was fabricated."*
+- ❓ The rendered appearance of the three mutually exclusive states (menu overlay, form
+  overlay, scrolled-dark header) — the PDF notes their subtrees were captured live and
+  stored separately, but those subtrees are not in this document.
+
+**Consequence:** I can reproduce the reference's *pacing, rhythm, geometry, motion and
+state logic* with high fidelity. I cannot reproduce its *pictorial composition*,
+because no supplied evidence describes it. For MAISON VELOR that is the correct
+outcome anyway — composition-as-imagery is explicitly non-transferable. But you should
+know the boundary. If you want closer visual kinship, supply screenshots.
 
 ---
 
-## 1. Project audit (all CONFIRMED)
+## 1. Project audit (CONFIRMED)
 
-### 1.1 What this repository actually is
+### 1.1 What this repository is
 
-Not an empty project. It is a **finished, tested, two-page Vite site** called
-`manoj-dev`, on its fifth commit.
+A finished, tested, two-entry **Vite 8 + React 19 + TypeScript 5 (strict) + Tailwind 4**
+site named `manoj-dev`, five commits deep.
 
-```
-63694c4 Resolve hero portrait paths through BASE_URL
-4b62753 Rename the personal site to Manoj Dev and make it the site root
-8984907 Add a portrait-led portfolio site on the same design system
-83c8821 Build the site as a Vite + React + TypeScript + Tailwind project
-2e324e5 Add Lumora single-file landing page
-```
-
-Two entries share one design system:
-
-| Entry | Route | Source | What it is |
-| --- | --- | --- | --- |
-| `index.html` | `/` | `src/portfolio/` | "Manoj Dev" personal site — the current root |
-| `lumora.html` | `/lumora.html` | `src/lumora/` | "Lumora" studio landing page |
-
-Plus `standalone/index.html`, a dependency-free single-file build of the studio page.
-
-### 1.2 Current stack — and the conflict with the brief
-
-| Concern | **What exists today** | **What the brief mandates** | Conflict |
-| --- | --- | --- | --- |
-| Build | **Vite 8** | **Next.js** | ⚠️ **Major** |
-| UI | React 19 + TypeScript 5 strict | React + TS strict | ✅ None |
-| Styling | Tailwind CSS 4 (CSS-first `@theme`) | Tailwind CSS | ✅ None |
-| Motion | `@react-spring/web` + `spring-text-engine` | **Motion (motion.dev)** | ⚠️ **Major** |
-| Smooth scroll | **Lenis** | (brief notes the *reference* used none) | ⚠️ Minor |
-| 3D | none | Three.js / R3F *only where justified* | ✅ None |
-| Unit tests | Vitest + Testing Library (happy-dom) | — | ✅ Asset |
-| E2E | Playwright 1.56.1 | Browser QA required | ✅ Asset |
-| Lint | ESLint 10 + typescript-eslint + react-hooks | — | ✅ Asset |
-
-`node_modules` is **absent** — nothing has been installed in this container yet.
-Node v22.22.2, npm 10.9.7. 16 GB RAM, ~30 GB free disk available here.
-
-### 1.3 Existing design system (a genuine asset)
-
-`src/index.css` already defines a coherent token layer:
-
-- **Palette:** white `#ffffff` background, near-black ink `#0a0a0a`/`#111111`,
-  greys `#8d8d8d`/`#b6b6b6`, line `#e6e5e2`, surfaces `#f1f0ee`/`#e3e2df`,
-  burnt-orange accent `#b15f2c` (with `from`/`to` variants).
-- **Radii:** `pill`, `card` 2rem, `card-sm` 1.25rem, `control` 0.875rem.
-- **Type:** Onest (Google Fonts), weights 400–700. One family only.
-- **Reduced motion:** a global `prefers-reduced-motion` kill-switch already exists.
-
-### 1.4 The adaptive rem grid — the most interesting thing in the repo
-
-`src/lib/adaptiveGrid.ts` + the media queries in `index.css` implement a genuinely
-sophisticated system: every layout value is authored in `rem` against a 16px design
-base, so changing the root font-size rescales the entire design.
-
-- Below 1920px, `max-width` media queries set `html { font-size }` in `vw`
-  (each is `16 * 100 / <design base width> vw`): 1920→`0.8333vw`, 1440→`1.1111vw`,
-  1024→`1.5625vw`, 640→`4.4444vw`.
-- Above 1920px, `adaptiveFontSize()` interpolates a larger root size with a
-  damping coefficient of `0.6666` so wide displays grow gently.
-- Covered by unit tests.
-
-**This is directly reusable for MAISON VELOR and I recommend keeping it.**
-
-### 1.5 Existing motion vocabulary
-
-| File | What it holds |
-| --- | --- |
-| `src/lib/constants.ts` | ~22 named `SPRING` configs, a `DELAY` ladder (150/200/250/300/400/550/650/750/900 ms after loader), a `STAGGER` map (45–120 ms), `LOADER_FILL_MS` 1300, `LIQUID` canvas params, `COUNT_UP` params |
-| `src/lib/textReveal.ts` | Line masks (900 ms, easeOutCubic, `y 100%→0%`) and word rises (700 ms, easeOutQuart, `y 24→0`) |
-| `src/lib/easing.ts` | `easeInOutCubic`, loader progress helpers |
-| `src/lib/scroll.ts` | Lenis singleton + a single `scrollEnabled` boolean gating the loader and both overlays |
-| `src/hooks/useInView.ts` | Fire-once IntersectionObserver, `rootMargin '0px 0px -5% 0px'`, threshold 0.01 |
-
-Note the structural echo: the existing `DELAY` ladder already steps in ~150 ms
-increments at the top, and `useInView` is already an IntersectionObserver-driven
-reveal system. The repo is closer to the reference's *mechanics* than to its look.
-
-### 1.6 Existing components
-
-24 shared components (`src/components/`) + 10 portfolio-specific ones. The shared
-primitives worth keeping: `Reveal`, `LineReveal`, `PillButton`, `Eyebrow`, `TagChip`,
-`Shell`, `AnimatedLink`, plus `PageLoader`, `Header`, `NavMenu`, `RequestModal`
-(all of which already take their copy as props, so they are genuinely shared rather
-than cloned).
-
-**There is no commerce code anywhere.** No product model, no cart, no wishlist,
-no catalogue, no filtering. V1 commerce UX is a build-from-zero.
-
-### 1.7 Known honesty markers already in the repo
-
-The README explicitly states the contact modal's submit "is **a stub** … and sends
-nothing anywhere — there is no backend in this project." That posture matches the
-brief's no-fake-functionality rule and should be carried into MAISON VELOR.
-
----
-
-## 2. Reference anatomy (as RELAYED by the brief)
-
-### 2.1 Technical architecture — RELAYED
-
-- Nuxt 3 / Vue.
-- **Native scroll.** No smooth-scroll library.
-- A custom `requestAnimationFrame` + `IntersectionObserver` motion system.
-- **Explicitly no** GSAP, ScrollTrigger, Lenis, Locomotive or Framer Motion.
-- A WebGL background layer rendering behind the DOM (a "relief" effect).
-
-> The brief is emphatic on one point and I will honour it: **Motion.dev was not used
-> by the reference.** Any claim otherwise would be fabricated. Our use of Motion is a
-> MAISON VELOR implementation choice, not a reference finding.
-
-### 2.2 Layout / grid — RELAYED
-
-- A **dual-grid 12 / 24-column system**.
-- `1rem` gutter, `2rem` page margin, at the measured desktop baseline.
-- Measurements were taken at **375 × 812**, **768 × 1024**, **1440 × 900**.
-
-### 2.3 Timing & motion — RELAYED
-
-| Measured value | Description |
-| --- | --- |
-| **150 ms timing ladder** | A disciplined ladder — durations/delays step in 150 ms units |
-| **75 ms split-text stagger** | Per-unit delay across split-text structures |
-| **45 px parallax unit** | A base translation distance, applied with different multipliers per depth layer |
-| Viewport-multiple pinned stages | Pinned sequences sized as multiples of the viewport height |
-| One-scalar scroll architecture | A single normalised scroll progress value drives the motion system |
-| Pin-spacer sizing | Spacer elements sized to preserve document flow around pinned sections |
-| Wipe-over-fade reveals | Clip-path wipes preferred over opacity fades |
-
-### 2.4 What the brief says is transferable — RELAYED
-
-1. One-scalar scroll architecture
-2. Easing vocabulary
-3. Timing ladder
-4. Text stagger
-5. Parallax depth principles
-6. Pin-spacer sizing principles
-7. Wipe-over-fade reveals
-
-### 2.5 What the brief says must NOT be transferred — RELAYED
-
-1. The original palette
-2. The commercial display fonts — named as **OTJubilee-Platinum** and **Voyage-Regular**
-3. The copy
-4. The imagery
-5. The SVG artwork
-6. The section names
-7. The WebGL relief background
-
-### 2.6 What is genuinely UNKNOWN
-
-Because the PDF, the screenshots and the live site are all unavailable to me, the
-following are **not known and I have not guessed them**:
-
-- ❓ The reference's actual section order, count, or content rhythm
-- ❓ Its navigation model (overlay? inline? sticky? header state transitions)
-- ❓ Its hero composition and what occupies the first viewport
-- ❓ Its footer structure
-- ❓ Its CTA placement and density
-- ❓ Its section heights and whitespace ratios beyond the grid numbers above
-- ❓ Its typographic scale (ratios, sizes, line-heights, tracking)
-- ❓ Its exact easing curve definitions (the brief says "easing vocabulary" but gives no curves)
-- ❓ Its image aspect ratios
-- ❓ Its breakpoint-by-breakpoint responsive adaptations
-- ❓ Whether it is even an ecommerce site (the search result described it as an
-  organisation coordinating distributed spaces and product development — which is
-  **not** a boutique retailer)
-- ❓ Its colour palette, beyond "do not reuse it"
-
-**This is the single biggest gap in Phase 0 and it drives Decision A in §8.**
-
----
-
-## 3. Transferable mechanics — the MAISON VELOR motion contract
-
-Proposed translation of §2.4 into our stack. Numbers are **starting points to be
-visually validated**, per your brief's instruction, not values to copy mechanically.
-
-### 3.1 One-scalar scroll architecture
-
-One normalised `0 → 1` progress value per scroll-driven section, read by every
-animated child. Implemented with Motion's `useScroll` + `useTransform`, which is
-natively a one-scalar API. Single source of truth; no component computes its own
-scroll maths.
-
-### 3.2 Timing ladder
-
-A 150 ms base unit, expressed as tokens rather than magic numbers:
-
-| Token | Value | Use |
+| Entry | Route | Source |
 | --- | --- | --- |
-| `duration.instant` | 150 ms | State flips, hover |
-| `duration.quick` | 300 ms | Small reveals, chips |
-| `duration.base` | 450 ms | Standard element entrance |
-| `duration.slow` | 600 ms | Image wipes |
-| `duration.editorial` | 900 ms | Hero lines, pinned stage transitions |
+| `index.html` | `/` | `src/portfolio/` — "Manoj Dev" personal site |
+| `lumora.html` | `/lumora.html` | `src/lumora/` — "Lumora" studio landing page |
 
-The existing `DELAY` map in `src/lib/constants.ts` already steps in ~150 ms at the
-top and can be reconciled onto this ladder.
+Plus `standalone/index.html`, a dependency-free single-file build. `node_modules` is
+absent. Node v22.22.2, npm 10.9.7, 16 GB RAM, ~30 GB disk free in this container.
 
-### 3.3 Text stagger
+Existing deps of note: `@react-spring/web`, `spring-text-engine`, `lenis`.
+Testing: Vitest + Testing Library (happy-dom), Playwright 1.56.1, ESLint 10.
 
-75 ms per unit. Line-mask reveals as the default; word- or character-splitting only
-where the typography genuinely earns it (hero, one editorial pull-quote). The
-existing `LINE_CONFIG` / `WORD_CONFIG` in `src/lib/textReveal.ts` is the same idea
-and can be re-tokenised rather than rewritten.
+**There is no commerce code of any kind.** No product model, catalogue, cart, wishlist
+or filtering. That is a build-from-zero.
 
-### 3.4 Parallax depth
+### 1.2 Existing assets worth keeping
 
-A base unit of **45 px** with per-layer multipliers, e.g. `0.5× / 1× / 2×` for
-background, mid and foreground. Disabled entirely under reduced motion.
+| Asset | File | Verdict |
+| --- | --- | --- |
+| Semantic token layer in Tailwind `@theme` | `src/index.css` | ✅ Keep the *structure*, replace every value |
+| Fire-once IntersectionObserver | `src/hooks/useInView.ts` | ✅ Keep — the reference uses IO the same way (10 uses) |
+| Named motion config map | `src/lib/constants.ts` | ⚠️ Keep the *idea* (named tokens, not magic numbers); replace spring configs with the reference's curve + duration vocabulary |
+| Line/word reveal curves | `src/lib/textReveal.ts` | ⚠️ Same — re-token against the six measured curves |
+| Scroll lock via one boolean | `src/lib/scroll.ts` | ✅ Keep the gate; ❌ drop the Lenis instance (§4.1) |
+| Playwright + Vitest harness | `tests/` | ✅ Keep — the guidance's A1–A24 need exactly this |
 
-### 3.5 Wipe-over-fade reveals
+### 1.3 A conflict the new material exposes: the adaptive rem grid
 
-`clip-path: inset()` wipes as the default image-reveal, not `opacity`. Fade
-permitted only for non-structural elements. This is also the more performant
-choice — `clip-path` is compositable.
+`src/lib/adaptiveGrid.ts` + `src/index.css` scale `html { font-size }` in `vw` at every
+breakpoint (1920→`0.8333vw`, 1440→`1.1111vw`, 1024→`1.5625vw`, 640→`4.4444vw`), then
+interpolate a larger root above 1920 px with a `0.6666` damping coefficient.
 
-### 3.6 Pin-spacer sizing
+**The reference does not do this.** MEASURED, PDF §08:
 
-Pinned sections sized as explicit viewport multiples with a spacer preserving
-document flow, so nothing jumps when pinning engages/releases. **Budget: at most
-two pinned sequences on the entire site.** The brief warns against long scroll
-sections built for imitation's sake, and I agree.
+| Viewport | Doc height | Header | **Root font** | Overflow |
+| --- | ---: | --- | --- | --- |
+| 375×812 | 13 745 | 135 px fixed | **16 px** | none |
+| 768×1024 | 14 184 | 135 px fixed | **16 px** | none |
+| 1440×900 | 21 300 | 169 px fixed | **16 px** | none |
+
+Root font is 16 px at all three widths. Fluidity is carried by *values*, not by the
+root: the sizing sweep classifies **33 fixed-px, 16 vw and 12 calc expressions with 19
+breakpoint jumps**, and typography carries mobile variants in the class names
+themselves (`.-h5.-m-h6`, `.-h2.-m-h4`).
+
+This matters beyond fidelity. A `vw`-driven root font size overrides the user's browser
+font-size preference and distorts zoom behaviour, which puts two of the guidance's
+acceptance criteria at risk:
+
+- **A18** — usable at 200 % zoom (WCAG 1.4.4)
+- **A19** — survives the text-spacing override, line-height 1.5× (WCAG 1.4.12)
+
+**Recommendation: drop the `vw` root-font technique for MAISON VELOR.** Fixed 16 px
+root, fluidity via `clamp()` and explicit breakpoint steps on individual values, exactly
+as the reference does it. This is both the evidence-backed choice and the accessible
+one. The `adaptiveGrid` module stays in the repo for the two existing sites; MAISON
+VELOR does not adopt it.
 
 ---
 
-## 4. Mechanics we should deliberately change
+## 2. Reference anatomy — MEASURED
 
-| # | Reference behaviour (RELAYED) | MAISON VELOR | Why |
+### 2.1 Technical stack (PDF §02)
+
+- **Nuxt 3 / Vue, server-rendered.** `window.__NUXT__` exposes `data`, `state`,
+  `config`, `serverRendered`, `path`, `pinia` — state is Pinia.
+- Vite chunks under `/_nuxt/`; component-scoped CSS via `data-v-*` (Vue SFC scoped styles).
+- **Native scroll.** `html` and `body` are `overflow: visible`, `scroll-behavior: auto`.
+  No transform wrapper. No scroll hijacking.
+- **WebGL background layer** — a viewport-sized `<canvas>` inside `div.relief-bg`,
+  sitting *behind* the DOM. It is not the rendering surface for content.
+- **No third-party motion library ships on this site.** Case-insensitive search across
+  all mirrored bundles and CSS returns **zero** matches for `gsap`, `ScrollTrigger`,
+  `ScrollSmoother`, `Lenis`, `Locomotive` and `Framer Motion`.
+- The motion system is `requestAnimationFrame` (**35 uses**), `IntersectionObserver`
+  (**10 uses**), and one hand-rolled scroll controller in `entry.6ece3b7b.js` exposing
+  `scrollTriggerRules[]`, `addScrollMark`, `triggerScrollRules`,
+  `SCROLLING_FORWARD/BACKWARD`. The PDF notes that the `scrollTrigger` substring is
+  *"a coincidence of naming, not GSAP."*
+
+> Confirming the brief's instruction: **Motion.dev was not used by the reference.**
+> Nothing in either document suggests otherwise, and I will not claim it did.
+
+### 2.2 Design tokens (PDF §03) — from 102 CSS custom properties
+
+**Colour — the full measured palette.** Note there is **no `#000000`**; the darkest
+value is `#151415`, which also matches the site's `meta-theme-color`.
+
+| Token | Value |
+| --- | --- |
+| `--c-black` | `#151415` |
+| `--c-stone` | `#242324` |
+| `--c-grey` | `#3f383c` |
+| `--c-brown` | `#7b5136` |
+| `--c-red` | `#ff5113` |
+| `--c-stroke` | `#9faf9b` |
+| `--c-yellow` | `#f1eade` |
+| `--c-white` | `#fff` |
+
+**Easing — the complete vocabulary.** Six named curves, and the PDF is explicit: *"the
+site uses nothing else. That restraint is what makes the motion read as one system
+rather than per-component improvisation."*
+
+| Token | Curve | Role |
+| --- | --- | --- |
+| `--f-cubic` | `cubic-bezier(.35,.35,0,1)` | **default** |
+| `--f-cubic-in` | `cubic-bezier(.69,0,0,1)` | clip-path wipes |
+| `--f-fast` | `cubic-bezier(.2,.75,.35,1)` | **split-text** |
+| `--f-smooth` | `cubic-bezier(.5,0,.3,1)` | — |
+| `--f-smooth-alt` | `cubic-bezier(.6,0,.05,1)` | — |
+| `--f-bounce` | `cubic-bezier(.6,.5,0,3)` | **overshoot** |
+
+**Timing — base unit 150 ms.** Every duration observed across **36 live Web Animations
+entries** is a multiple of 150 ms. 1200 ms is the single most common, at **48
+occurrences**.
+
+| Multiple | Duration | Role |
+| ---: | ---: | --- |
+| ½× | 75 ms | split-text stagger step |
+| 2× | 300 ms | small state changes |
+| 3× | 450 ms | link underline sweep (`background-size`) |
+| 4× | 600 ms | — |
+| 6× | 900 ms | header transform / background |
+| **8×** | **1200 ms** | **dominant — 48 occurrences** |
+| 9× | 1350 ms | — |
+| 10× | 1500 ms | split-text reveal; overlay close opacity |
+| 14× | 2100 ms | overlay close background-colour |
+| 20× | 3000 ms | slowest observed |
+
+**Type, grid, depth:**
+
+| Token | Value |
+| --- | --- |
+| `--p` (base) | `1rem` |
+| `--type-step` | `1.25` (modular ratio) |
+| scale | `h6…h0`, each ×1.25 → **h0 ≈ 4.77rem** |
+| `--body-line-height` | `1.3` |
+| `--columns` / `--g-columns` | **12 / 24 (dual grid)** |
+| `--g-gap` / `--g-margin` | `1rem` / `2rem` |
+| parallax unit | **45 px** |
+| `--border-radius` | `.4rem` |
+
+**Typefaces.** All four self-hosted woff/woff2 on the site's own domain — *"which is why
+the paid-font CDN scan reports zero findings. That is not licence clearance."*
+
+- `--font-t-1` **OTJubilee-Platinum** — display. Commercial licence.
+- `--font-t-2` **Voyage-Regular** — display. Commercial licence.
+- `--font-b-regular` / `--font-b-medium` **Switzer** — body, 20 px / 26 px.
+
+### 2.3 The scroll architecture (PDF §04) — *"the finding worth carrying forward"*
+
+JavaScript writes **one scalar per section**; CSS `calc()` derives every transform,
+offset and radius from it.
+
+```
+--progress        0 → 1, written by rAF
+--smart-progress  calc(max(0,(var(--progress) - 1/8)) / (1 - 1/8))
+--sc-calc-x       calc(var(--sc-offset-x) * (1 - min(var(--progress)*2, 1)))
+--sctl-calc-r     calc(var(--sctl-radius) * var(--progress-ending) + .4rem)
+```
+
+`--smart-progress` holds the first **eighth** of a section's travel static before motion
+begins, *"so entry never feels twitchy."*
+
+Two direct instructions from the PDF, which I intend to follow:
+
+> *"Because the derivation lives in CSS, the runtime needs no animation library — a
+> faithful reimplementation needs a scroll-progress writer, not a per-element animation
+> rig."*
+
+> *"Keep the CSS-derives-from-one-scalar contract when porting to React or Nuxt — it
+> survives the framework move intact and is what keeps the runtime small."*
+
+This is the single most important architectural finding in the whole audit, and it
+drives **Decision F** (§9).
+
+### 2.4 Header state machine (PDF §05)
+
+`-dark` tracks **the background of the section in view** — it is *not* a scroll-depth
+threshold.
+
+| Route | At top | Once scrolled | Behaviour |
 | --- | --- | --- | --- |
-| 1 | Nuxt 3 / Vue | Next.js or Vite + React (**Decision B**) | Brief mandates React/TS; repo is already React |
-| 2 | Custom rAF/IO motion engine | **Motion (motion.dev)** | Brief mandates it. Also: less bespoke code to maintain, and Motion's `useScroll` is a one-scalar API by design |
-| 3 | WebGL relief background | Excluded. 3D only if a concept earns it | Explicitly non-transferable + a mobile perf cost |
-| 4 | Native scroll (no smooth-scroll lib) | **Recommend native scroll — drop Lenis** | Lenis fights native anchor/`scroll-behavior`, hurts accessibility and adds a rAF loop. The reference's evidence supports going without. Requires removing it from `src/lib/scroll.ts` |
-| 5 | Dual-grid 12/24 columns | **12-column desktop, 8 tablet, 4 mobile** | 24 columns is a lot of machinery for a boutique catalogue. Evidence, not a requirement — the brief says so explicitly |
-| 6 | OTJubilee-Platinum / Voyage-Regular | Open-licence faces only, served from Google Fonts | Licensing. Also the only reachable font CDN here (§7.2) |
-| 7 | Site is (apparently) not retail | Full boutique commerce UX | This is our brief, not theirs |
-| 8 | Unknown section names | Original MAISON VELOR section names | Explicitly non-transferable |
+| `/` | `header` | `-scrolled` | `-dark` **on** at 5100 / 10200 / 20400, **off** at 15300 / 18360 |
+| `/places` | `-dark` | `-scrolled` | dark drops immediately |
+| `/objects` | `-dark` | `-scrolled -dark` | dark drops by 3000 |
+| `/about` | `-dark` | `-scrolled -dark` | dark retained throughout |
+| `/people` | `-dark` | `-scrolled` | dark drops immediately |
+
+Only the homepage starts bare; every sub-route ships `-dark` as its default.
+
+**DERIVED — the sample stops.** Max scroll on `/` is `21300 − 900 = 20400`. The five
+stops are exactly 25 % / 50 % / 75 % / 90 % / 100 % of that: 5100, 10200, 15300, 18360,
+20400. So these are sampled probes, not transition points.
+
+**A tension worth flagging.** The PDF's prose says the class *"turns off over the light
+middle sections and back on over `c-admission`."* But the 100 % stop (20400) shows
+20400–21300, which is entirely `page-footer`; and the 90 % stop (18360) falls inside
+`c-admission` (18792–20194) with `-dark` **off**. The table and the sentence do not
+quite agree about `c-admission`. I am not resolving this by picking one — it is flagged
+for verification, and MAISON VELOR's header will implement the *rule* (section-background
+driven) rather than any specific offset ladder.
+
+### 2.5 Homepage section geometry (PDF §06)
+
+**Fourteen top-level sections at 1440×900. Document height 21 300 px.** Three pin
+spacers are exact viewport multiples — *"the signature of scroll-pinned stages."*
+
+| # | Tag | Class | Height | Top | Position |
+| ---: | --- | --- | ---: | ---: | --- |
+| 0 | section | `c-welcome -inview` | 1176 | 0 | relative |
+| 1 | header | — | 169 | 0 | **fixed** |
+| 2 | div | `title` | 281 | 1176 | relative |
+| 3 | div | `places-story` | **3600 (4×vh)** | 1457 | static |
+| 4 | section | `c-places-after` | 1081 | 5057 | relative |
+| 5 | div | `-gc sequence` | 900 | 6138 | **sticky** |
+| 6 | div | `sticky-container-1` | **3600 (4×vh)** | 6588 | static |
+| 7 | div | `sticky-container-2 -a-p -s-p-repeat` | **5400 (6×vh)** | 9288 | static |
+| 8 | div | `connection-figure` | 900 | 14688 | relative |
+| 9 | section | `c-connection` | 1427 | 14688 | relative |
+| 10 | section | `c-updates` | 977 | 16115 | relative |
+| 11 | section | `c-people` | 1628 | 17164 | relative |
+| 12 | section | `c-admission` | 1690 | 18792 | relative |
+| 13 | footer | `page-footer -home` | 1106 | 20194 | relative |
+
+The table closes cleanly at the load-bearing boundaries (1457+3600=5057; 5057+1081=6138;
+9288+5400=14688; 14688+1427=16115; 17164+1628=18792; 20194+1106=21300 = document height).
+
+**Other routes:**
+
+| Route | Sections | Doc height | Notable |
+| --- | ---: | ---: | --- |
+| `/places` | 6 | 10 655 | WebGL render type; **heaviest scroll workload** |
+| `/objects` | 6 | 5 842 | `c-welcome` 2700 px = **3×vh pin**; `c-principles`, `c-sequence`, `c-origin` |
+| `/about` | 6 | — | `div.figure-map` 900 px `absolute`; `c-operates` |
+| `/people` | 5 | — | `c-about`, `c-cta` |
+
+**Pacing, DERIVED.** Of the homepage's 21 300 px, **12 600 px (59 %)** is pinned or
+sticky spacer (3600 + 3600 + 5400). The reference spends well over half its scroll
+budget on three pinned stages and the rest on ten comparatively compact sections
+(977–1690 px each, i.e. 1.1–1.9 viewports). That ratio *is* the pacing signature.
+
+### 2.6 Motion families (PDF §07)
+
+**Split-text reveal.** Headlines split into per-character spans inside per-line masks.
+**69 `span.-s-char` nodes on the homepage.**
+
+| Property | Value |
+| --- | --- |
+| structure | `span.-s-line > span.-s-char` |
+| duration | **1.5 s** (`--f-fast`) |
+| stagger | **75 ms** · observed `.075 / .15 / .225` |
+| properties | opacity, scale, translate, transform, filter |
+
+**Parallax — one unit, four multipliers.** Runtime-measured inline transforms. A single
+**45 px** depth unit, scaled per element.
+
+| Selector | Measured | Multiplier |
+| --- | ---: | ---: |
+| `span.caption.-h5.-m-h6` | −45 px | ×−1 |
+| `span.title.-lrg.-splitted` | −45 px | ×−1 |
+| `span.article.-h2.-m-h4` | −45 px | ×−1 |
+| `span.title.-lrg.-splitted` | +22.5 px | ×0.5 |
+| `span.subtitle.-h5.-m-h6` | +45 px | ×1 |
+| `span.underlay.-inview` | **+180 px** | **×4** |
+
+**Pinned sequence.** Sticky stages inside spacers of 3600 and 5400 px against a 900 px
+viewport — 4 and 6 screens of travel. Sticky targets: `.-gc`, `.-gc.sequence`,
+`.-gc.sticky`, `.object-holder`, `.title.-lrg`. Frame machinery:
+`sequence-container`, `sequence-controller`, `sequence-canvas`,
+`figure-sequence.f-s-1…3`, `nav.sequence-nav.-hm`.
+
+**Clip-path reveal.** `figure.-fit.-active` carries `will-change: clip-path` and reveals
+by **wipe rather than fade**, on `--f-cubic-in`. *"The crisp edge through the transition
+is what distinguishes it from an opacity reveal."*
+
+**Overlays.** Two full-viewport overlays. Both set `-isolate` on `<html>`. Both
+**unmount from the DOM** when closed — Vue `v-if`, not a visibility toggle.
+
+- `.full-screen-menu` — opened by `button.menu`, 1440×900, exposes Places / Objects /
+  About / People. Close transitions `background-color` **2.1 s** + `opacity` **1.5 s**,
+  both `--f-cubic`.
+- `.full-screen-form` — opened by `button.request`, 8-child form. Reachable only after
+  the cookie overlay is dismissed; `.fdcm--container` silently intercepts the click
+  otherwise.
+
+> That last clause is a **live UX defect in the reference**: a consent container
+> swallowing the primary conversion click. MAISON VELOR must not reproduce it. Noted in
+> §6.
+
+### 2.7 What the guidance verified about the brand (MD §1.2) — MEASURED
+
+Verification was performed against the live site on 31 August 2026, and it **overturned
+the brief the guidance was given**:
+
+| Assumed | Verified |
+| --- | --- |
+| E-commerce storefront | ❌ **No cart, no prices, no SKUs, no add-to-cart, no checkout** on `/` or `/objects` |
+| Online shoppers | ❌ Applicants to a private, invitation-controlled organisation |
+| — | "Objects" is an **editorial catalogue** of named pieces: Object I, III, V, VI; The Rabbit Keeper, The Guardian, The Fox Spirit, The Elder |
+| — | Primary conversion is an **Admission application** (Full Name, Email, Country, City, Context for Admission → Submit Admission) |
+| — | The site is a **speculative design exploration** published under the "Imagine Possible" initiative by Fiddle.Digital |
+| — | `meta-color-scheme: dark`, `meta-theme-color: #151415` — dark UI confirmed and intentional |
+
+Site copy verified: *"A Private Assembly for Makers"*, *"Commitment Precedes Entry"*,
+*"Access is considered, not assumed."*
+
+**This is the most consequential finding for MAISON VELOR.** See §5.
+
+Page density, verified: **15 buttons, 12 links, 6 inputs, 5 navigation regions.** Nav
+regions are: primary header nav, sticky brand bar, overlay menu, footer nav (Places /
+Objects / About / Contacts / People), and in-page carousel pagination. At least three
+carousels exist ("4/7" Silent Room, "1/4" The Fox Spirit, and a 1–5 paginator).
 
 ---
 
-## 5. MAISON VELOR creative opportunities
+## 3. Transferable mechanics → the MAISON VELOR motion contract
 
-Flagged as opportunities for Phase 1. **No brand decisions are being made here** —
-Phase 1 is where that happens, after your approval.
+The PDF's §10 names exactly seven transferable mechanics. Each is adopted below with
+its measured value and its MAISON VELOR translation.
 
-1. **Distance from the existing site.** The repo's palette is white + near-black +
-   burnt orange, in Onest. A boutique identity needs a different temperature, a
-   display/text type pairing rather than one grotesque, and probably a darker or
-   warmer ground. The token layer is well-built and can absorb a full re-skin.
-2. **Editorial over grid.** The strongest differentiator against "generic luxury
-   ecommerce" is treating the catalogue as an *editorial sequence* — asymmetric
-   product placement, deliberate empty columns, varied image ratios — rather than a
-   uniform 3-up card grid.
-3. **The wipe as a brand signature.** If the clip-path wipe is used consistently
-   (images, page transitions, cart drawer, product gallery) it becomes recognisable.
-   One gesture repeated beats five different ones.
-4. **Typography as the hero.** With stock imagery unavailable (§7.2), a
-   type-led hero is both the stronger design choice and the lower-risk one.
-5. **Product detail as the set-piece.** Most portfolio ecommerce work puts all its
-   effort into the homepage. Inverting that — making the PDP the most considered
-   page — is both rarer and more convincing to a client.
-6. **The 3D question.** No case for it yet. Phase 1 will propose at most three
-   concepts with at least one requiring no 3D, per the brief.
+| # | Mechanic | Measured | MAISON VELOR |
+| --- | --- | --- | --- |
+| 1 | One-scalar scroll architecture | `--progress` written by rAF; CSS `calc()` derives everything | **Adopt verbatim.** One rAF writer, one custom property per section, all derivation in CSS. See Decision F. |
+| 2 | Easing vocabulary | Six curves, nothing else | **Adopt all six curves as-is.** Curves are maths, not brand. Keeping exactly six is the discipline that makes it read as one system. |
+| 3 | 150 ms timing ladder | 75 / 300 / 450 / 600 / 900 / 1200 / 1350 / 1500 / 2100 / 3000 | **Adopt the ladder**, validate each rung visually. Likely trim the 2100/3000 rungs — a 3 s response is a lot for a boutique. |
+| 4 | Split-text stagger | 75 ms, 1.5 s duration, `--f-fast` | **Adopt.** Line masks by default; per-character only where the type earns it. Hard rule in §6 about the DOM text. |
+| 5 | Parallax depth | One 45 px unit; multipliers ×−1, ×0.5, ×1, ×4 | **Adopt the unit-and-multiplier model.** Keep ×4 for one underlay element only. Zero under reduced motion. |
+| 6 | Pin-spacer sizing | Exact viewport multiples: 3×, 4×, 6× | **Adopt the principle, halve the budget.** Two pinned stages, 3×vh and 4×vh. The reference spends 59 % of scroll pinned; a boutique that needs to sell should spend less. |
+| 7 | Wipe-over-fade reveals | `clip-path`, `will-change: clip-path`, `--f-cubic-in` | **Adopt as the house reveal.** Extend it to page transitions and the cart drawer so it becomes a brand signature. |
+
+### 3.1 `--smart-progress` is the detail most people would miss
+
+`calc(max(0,(var(--progress) - 1/8)) / (1 - 1/8))` — an eighth of dead travel before
+motion starts. It costs one line of CSS and it is the difference between motion that
+feels composed and motion that feels twitchy. Adopted exactly.
 
 ---
 
-## 6. Proposed information architecture
+## 4. Design-system findings
 
-Aligned to the brief's suggested structure, trimmed. **Route count is deliberately
-minimal** — the brief says not to create unnecessary routes.
+### 4.1 Native scroll — evidence settles the Lenis question
+
+The reference uses native scroll: `html`/`body` `overflow: visible`,
+`scroll-behavior: auto`, no transform wrapper, no hijacking. The repo currently ships
+Lenis with a manual rAF loop (`src/lib/scroll.ts`).
+
+**Decision (mine, logged): MAISON VELOR drops Lenis.** Reasons, in order: the reference
+evidence is unambiguous; a smooth-scroll wrapper fights the one-scalar rAF writer for
+the same frame budget; and it degrades keyboard/anchor behaviour, which the guidance's
+A5/A6/A9/A10 all test. The two existing sites keep Lenis; MAISON VELOR does not adopt it.
+
+### 4.2 The dual 12/24 grid — I have reversed my revision-1 recommendation
+
+Revision 1 proposed simplifying to 12/8/4. Now that `--columns: 12` / `--g-columns: 24`
+with `--g-gap: 1rem` / `--g-margin: 2rem` is confirmed as the reference's actual
+compositional engine, I withdraw that. A 24-column track nested inside a 12-column
+parent costs almost nothing in CSS Grid and is precisely what enables editorial
+asymmetry — half-column offsets, deliberate empty tracks, images that break the text
+measure. **Adopt the dual grid.** Mobile collapses to 4/8.
+
+### 4.3 Reconciling the two documents resolves all three P0 blockers
+
+The guidance opens **⚠️ Blocked** on three P0 items. All three assume a 5-value token
+export. Against the PDF's measured 8-value palette they look different.
+
+**The canvas is `#151415`, not `#000000`.** The guidance's `color.surface.base` is
+`#000000`, but the PDF found no pure black in 102 custom properties, and the live
+`meta-theme-color` is `#151415`. So every ratio the guidance computed against the canvas
+is slightly off.
+
+**DERIVED — recomputed against `#151415`**, using the guidance's own stated relative
+luminances (`#151415` = 0.00714, `#ffffff` = 1.0, `#f1eade` = 0.82820, `#7b5136` =
+0.10362) and the standard `(L₁+0.05)/(L₂+0.05)` formula. All re-verifiable:
+
+| Foreground | vs `#151415` | Body ≥4.5 | UI/Large ≥3 | Guidance said (vs `#000000`) |
+| --- | ---: | :---: | :---: | --- |
+| `#ffffff` | **18.38:1** | ✅ | ✅ | 21.00:1 |
+| `#f1eade` | **15.37:1** | ✅ | ✅ | 17.56:1 |
+| `#7b5136` (accent) | **2.69:1** | ❌ | ❌ | 3.07:1 ⚠️ |
+| `#151415` (self) | **1.00:1** | ❌ | ❌ | 1.14:1 |
+
+And the two colours the guidance was never given:
+
+| Token | Value | vs `#151415` | Verdict |
+| --- | --- | ---: | --- |
+| `--c-red` | `#ff5113` | **5.63:1** | ✅ passes body text |
+| `--c-stroke` | `#9faf9b` | **7.94:1** | ✅ passes everything |
+
+**Therefore:**
+
+| Blocker | Guidance verdict | Reconciled verdict |
+| --- | --- | --- |
+| **P0-1** — `text.primary` unusable on canvas | 1.14:1 | ✅ **Stands, and strengthens.** Against the real canvas it is 1.00:1 — the same colour on itself. The rule is right; the number was generous. |
+| **P0-2** — no error, border or focus colour exists | Blocking | ⚠️ **Largely dissolves.** `--c-red #ff5113` clears body text at 5.63:1 and `--c-stroke #9faf9b` clears every bar at 7.94:1. They exist; they were missing from the export the guidance was handed. A success colour is still genuinely absent. |
+| **P0-3** — `space.1` 6.4 px vs `space.2` 6.67 px, Δ 0.27 px | Blocking | ✅ **Stands.** The PDF did not extract a spacing scale, so there is no cross-check, but two tokens 0.27 px apart is a real defect on its face. |
+| **Accent `#7b5136`** | "clears 3:1 by 0.072" | 🔴 **Worse than reported.** Against the real canvas it is **2.69:1 and fails outright**, including for large text. The guidance's prohibition #5 should be absolute, not marginal. |
+
+**For MAISON VELOR this is the lesson, not the liability:** the reference's own palette
+cannot carry an accent on its dark ground. Our palette must be built surface-paired from
+the first token, and every pair verified numerically before it ships — which is exactly
+what §6 encodes.
+
+### 4.4 Token defects to design *out of* MAISON VELOR
+
+The guidance documents six structural faults. Each becomes a positive rule for us.
+
+| Reference defect | MAISON VELOR rule |
+| --- | --- |
+| `font.family.primary: Switzer-Regular` — a *static instance* used as a family name, forcing synthetic bold for every heavier weight | Family token holds the **family**; weight is expressed through weight tokens. No faux bold, ever. |
+| Only `font.weight.base: 400` exists; headings have no weight to reach for | Ship `400 / 500 / 600` in the first token pass. |
+| Six of eight spacing steps are non-integer (6.4, 6.67, 12.8, 31.25, 42.94…), rounding inconsistently across DPRs | **Integer spacing scale on a 4 px grid.** No sub-pixel steps. |
+| Spacing scale is *coupled to the type scale* — changing a type step silently moves layout rhythm | **Decouple spacing from type.** Two independent scales. |
+| All three shadows are `rgb(21,20,21)` — invisible on the dark canvas; an elevation system authored for light surfaces | Depth on dark = **border + background shift**, not shadow. Shadows only on light surfaces, or not at all. |
+| No feedback, border or focus tokens in the set at all | Error / success / border / focus in the **first** token pass, surface-paired. |
+
+Plus the guidance's three-layer architecture, adopted wholesale:
 
 ```
-/                       Home — editorial storytelling + featured pieces
-/collection             Catalogue — filter, sort, category facets
-/collection/[category]  Category view (same view, pre-filtered)
-/product/[slug]         Product detail — the set-piece
-/search                 Search results + empty/no-results states
-/cart                   Cart — line items, quantity, summary
+Layer 1  PRIMITIVE   raw values          — never referenced by components
+Layer 2  SEMANTIC    role-named, surface-paired — what components consume
+Layer 3  COMPONENT   aliases to layer 2 only    — never holds a literal
+```
+
+No raw hex in component CSS, Figma overrides, or utility classes. If a component needs a
+value with no layer-2 source, that is a layer-2 gap to raise, not a value to inline.
+
+---
+
+## 5. The commerce gap — the structural finding
+
+**The reference is not a shop.** Verified: no cart, no prices, no SKUs, no add-to-cart,
+no checkout. Its primary conversion is a membership application. MAISON VELOR is a
+boutique with a full commerce UX.
+
+So "close recreation of composition" has a hard boundary, and it is worth stating
+plainly rather than discovering it in Phase 5:
+
+| MAISON VELOR surface | Reference precedent? |
+| --- | --- |
+| Homepage editorial storytelling | ✅ Strong — 14 sections, three pinned stages, full geometry |
+| Collection / catalogue index | ✅ Partial — `/objects` is an editorial catalogue (6 sections, 5842 px, 3×vh pin) |
+| Makers / atelier narrative | ✅ Strong — `/people`, `/places` |
+| About | ✅ Strong — `/about` |
+| Navigation, overlays, header states | ✅ Strong — fully measured |
+| The single high-stakes form | ✅ Strong — `c-admission`, 8-child form, 1690 px |
+| **Product detail page** | ❌ **None.** No per-object route exists on any of the five. |
+| **Product grid with filter / sort** | ❌ None |
+| **Cart, wishlist, checkout** | ❌ None |
+| **Price, availability, quantity, size** | ❌ None |
+
+**Roughly half the V1 surface area has no reference composition to recreate.** That is
+not a problem — it is the part of the brief where MAISON VELOR has to be original
+anyway. But it does mean Gate 1 and Gate 3 carry more design weight than the brief's
+phase plan implies, and the PDP in particular is ours to invent from nothing.
+
+### 5.1 The guidance hands us the commerce spec anyway
+
+Its §3.6 lists precisely what must be specified *if* a transactional storefront is
+introduced. I propose adopting it as MAISON VELOR's commerce requirements baseline:
+
+- **Tokens:** price emphasis; stock/availability status (a fourth feedback colour,
+  surface-paired); quantity-stepper sizing.
+- **Components:** price display, quantity stepper, add-to-cart with post-action
+  confirmation, mini-cart, checkout stepper.
+- **WCAG obligations beyond the base set:**
+  - **3.3.4** Error Prevention (Legal, Financial, Data) — orders reversible, checked, or confirmed
+  - **3.3.7** Redundant Entry — shipping address reusable as billing
+  - **4.1.3** Status Messages — cart count changes announced **without moving focus**
+  - **1.4.13** for any price/size hover card
+
+> The guidance also notes that currency, tax and shipping disclosure carry consumer-law
+> obligations that vary by jurisdiction, and are outside its scope. I agree, and I flag
+> the same limit: **I am not able to give legal advice.** Since MAISON VELOR's commerce
+> is explicitly demo-only frontend state with no payment processing, no real consumer
+> obligation attaches — but if it ever became transactional, that review is a real task
+> for someone qualified.
+
+### 5.2 Section mapping — reference → MAISON VELOR
+
+| Reference | Height | MAISON VELOR | Retained | Changed |
+| --- | ---: | --- | --- | --- |
+| `c-welcome` + `title` | 1176 + 281 | Hero + statement | Geometry (~1.3×vh), split-text reveal, `-inview` gate | All copy, imagery, type |
+| `places-story` | 3600 (4×vh) | **Atelier story** — pinned | Pin-spacer principle | Reduced to 3×vh |
+| `c-places-after` | 1081 | Origin note | Compact section rhythm | Content |
+| `-gc sequence` + `sticky-container-1/2` | 900 + 3600 + 5400 | **The piece, examined** — one pinned sequence | Sticky-stage machinery, sequence nav | Merged from two stages into one 4×vh |
+| `connection-figure` + `c-connection` | 900 + 1427 | Editorial break | Figure-over-section layering | Content |
+| `c-updates` | 977 | **New this season** | Compact rhythm | Becomes product-led |
+| `c-people` | 1628 | **The makers** | Structure | Content |
+| `c-admission` | 1690 | **Private client enquiry** | Single high-stakes form, 8 fields | Not a gate to the catalogue |
+| `page-footer -home` | 1106 | Footer | Scale, nav grouping | Content |
+| — | — | **🆕 Featured pieces** | — | Commerce needs a product entry above the fold-ish |
+| `/objects` | 5842 | `/collection` | 6-section rhythm, 3×vh pin | Gains filter, sort, grid |
+| — | — | **🆕 `/product/[slug]`** | — | **No precedent. Original.** |
+| — | — | **🆕 cart / wishlist / checkout** | — | **No precedent. Original.** |
+| `/places`, `/people` | — | **Merged** into one `/atelier` | Narrative | Two routes into one |
+| `/about` | — | Folded into `/atelier` | — | Route removed |
+
+Net: **14 homepage sections → 10**, five routes → the IA in §7. The reference's 59 %
+pinned-scroll budget drops to roughly 35 %.
+
+---
+
+## 6. Accessibility — adopting the guidance wholesale
+
+The guidance is a WCAG 2.2 **Level AA** specification with 24 numbered, testable
+acceptance criteria (A1–A24), a 7-state universal component contract, 20 prohibited
+implementations and a release QA checklist. It is better than anything I would write
+from scratch. **I propose adopting it as MAISON VELOR's accessibility spec**, with
+brand-specific examples swapped and §3.6 promoted from conditional to mandatory.
+
+Highlights that will shape the build from day one:
+
+- **Seven states, always:** default · hover · focus-visible · active · disabled ·
+  loading · error. Each distinguishable by **at least two signals, one not colour**.
+  Focus-visible wins over every other state.
+- **`aria-disabled` on submit controls, never native `disabled`** — native removes the
+  control from tab order, so a keyboard user reaches the end of a form and finds nothing
+  there with no explanation.
+- **Focus ring exempt from every transition delay.** It appears immediately at every
+  duration setting.
+- **Every `<nav>` gets a unique `aria-label`.** The guidance calls this *"the single
+  highest-value fix"* in its navigation section.
+- **Sticky header + WCAG 2.4.11:** `scroll-margin-top` ≥ the sticky bar's height on
+  every focusable element. With a 169 px fixed header this is not optional.
+- **Carousels and 2.5.7:** every drag interaction needs a single-pointer alternative.
+- **16 px floor on all inputs** (iOS zoom-on-focus), visible labels never replaced by
+  placeholders, autocomplete on identity fields, errors that state the problem *and* the
+  fix, validation on blur or submit — never per-keystroke.
+- **Reduced motion:** the reference's own snippet, plus our own rule that parallax goes
+  to zero and pinned stages unpin entirely.
+- **`prefers-reduced-motion`, `forced-colors`, 320 px reflow, 200 % zoom, text-spacing
+  override** all in the Playwright suite, not in a checklist someone forgets.
+
+### 6.1 Three live defects in the reference we must not reproduce
+
+1. **The consent container swallows the primary CTA.** `.fdcm--container` silently
+   intercepts the click on `button.request` until the cookie overlay is dismissed. A
+   conversion path blocked by an invisible overlay.
+2. **Concatenated display type reaches the DOM as run-together text** —
+   `NothingShownFirst`, `CommitmentPrecedesEntry`, `NotEverythingis Visible`,
+   `FormedbyPeople`. Screen readers mispronounce these, translation fails, indexing
+   degrades. **Our rule:** correctly spaced text in the DOM; the stacked visual effect
+   is produced by CSS or per-word spans. This bites directly on our split-text reveal —
+   `span.-s-char` must wrap characters of properly spaced text, and the line container
+   needs an accessible name that reads as real words.
+3. **One action, two names** — "Seek Admission" as the trigger, "Submit Admission" as the
+   form button. **Our rule:** one name per action across trigger, control and
+   confirmation.
+
+---
+
+## 7. Proposed information architecture
+
+```
+/                       Home — editorial, two pinned stages, featured pieces
+/collection             Catalogue — filter, sort, category facets (URL params)
+/collection/[category]  Same view, pre-filtered
+/product/[slug]         Product detail — the set-piece. No reference precedent.
+/atelier                Makers + origins + about, merged from /places + /people + /about
+/search                 Results, with empty and no-results states
+/cart                   Line items, quantity, summary
 /wishlist               Saved pieces
-/account                Account UI (demo state, clearly labelled)
-/checkout               Checkout UI — address → delivery → review (NO payment processing)
+/checkout               Address → delivery → review. NO payment processing.
+/account                Demo account UI, labelled as such
 ```
 
-Deliberately **not** included in V1: order history detail, auth flows, blog/journal,
-store locator, size guide as a route (it becomes a PDP drawer instead).
-
-### 6.1 State model
+**State model**
 
 | Store | Scope | Persistence |
 | --- | --- | --- |
 | Cart | Client only | `localStorage` |
 | Wishlist | Client only | `localStorage` |
-| Filters / sort | URL search params | Shareable, back-button correct |
-| UI overlays (nav, search, cart drawer) | Context | Ephemeral |
+| Filters / sort | **URL search params** | Shareable, back-button correct |
+| UI overlays | Context | Ephemeral, unmounted when closed (per the reference's `v-if` semantics) |
 
-**Honesty rule, carried from the existing README:** cart, wishlist, account and
-checkout are **frontend demo state**. No payment provider, no auth, no inventory,
-no API. Every such surface will say so in the UI, not just in a comment.
-
-### 6.2 Product data model
-
-One source of truth in `src/data/`, typed:
+**Product model** — one typed source in `src/data/`:
 
 ```ts
 Product {
   id, slug, name, category, price, currency,
-  description, editorial,            // short + long copy
+  description, editorial,
   images: { src, alt, ratio }[],
   colors: { name, hex }[],
   sizes:  { label, available }[],
   materials, care,
   availability: 'in-stock' | 'low-stock' | 'sold-out' | 'made-to-order',
   featured: boolean,
-  related: string[]                  // slugs
+  related: string[]
 }
 ```
 
-### 6.3 Every surface gets five states
-
-Loading · Empty · Error · Success · Disabled. No happy-path-only components.
+**Honesty rule, inherited from this repo's existing README posture:** cart, wishlist,
+account and checkout are **frontend demo state**. No payment provider, no auth, no
+inventory, no API. Every such surface says so in the UI, not only in a code comment.
 
 ---
 
-## 7. Technical risks
+## 8. Risks
 
-### 7.1 🔴 HIGH — The reference evidence is secondhand
+| # | Risk | Severity | Mitigation |
+| --- | --- | --- | --- |
+| 1 | **No screenshots** — geometry without pixels (§0.4) | 🟠 Medium | Build from geometry + motion, design composition originally. Supply screenshots if closer visual kinship is wanted. |
+| 2 | **Half the V1 surface has no reference** (§5) | 🟠 Medium | Accept it. PDP/cart/checkout are original work; budget Gate 3 and Gate 5 accordingly. |
+| 3 | **Image sourcing blocked** — Unsplash, Pexels, Pixabay, Fontshare and the repo's own asset bucket all unreachable; only npm and Google Fonts pass | 🔴 High | Decision D. Generate and commit originals. |
+| 4 | **Fonts** — the reference's two display faces are commercially licensed and self-hosted; the PDF is explicit that *"the paid-features gate passes only because they are self-hosted, so a CDN scan cannot see them"* and that this *"is not licence clearance"* | 🟠 Medium | Open-licence faces only, from Google Fonts (the one reachable CDN). Never OTJubilee-Platinum or Voyage-Regular. Switzer is also out — its licence needs confirming at Fontshare, which is unreachable here. |
+| 5 | **Next.js vs. existing Vite** | 🟠 Medium | Decision B. |
+| 6 | **Named skills unavailable** — gstack, RuFlo, UI/UX Pro Max, taste-skill, Ponytail, Vercel guidelines, 21st.dev are not in this session (verified: 9 unrelated skills enabled, 0 plugins) | 🟠 Medium | Apply their principles; never claim to have run them. The guidance's A1–A24 substitute well for a formal review gate. |
+| 7 | **Two animation runtimes** if Motion is added beside react-spring | 🟡 Low | Migrate fully; remove react-spring and Lenis from MAISON VELOR's dependency surface. |
+| 8 | **Pinned sections on mobile** — iOS viewport-unit bugs, scroll jank | 🟡 Low | Two stages max, `dvh`, unpin entirely under reduced motion. The reference itself drops from 21 300 px desktop to 13 745 px mobile, so it clearly sheds scroll on small screens too. |
+| 9 | **Ephemeral container** | 🟡 Low | Commit and push at every phase. |
 
-I hold quoted numbers but no composition, no section order, no screenshots. The
-brief's stated goal is a *close recreation of composition and interaction
-principles* — and composition is precisely what I cannot see. **Mitigation:
-Decision A in §8.**
+---
 
-### 7.2 🔴 HIGH — Image sourcing is blocked in this environment
+## 9. Decisions
 
-Measured in this session:
+**Decision A (reference gap) is now resolved** — both documents supplied and read. The
+only residual is screenshots, tracked as Risk 1.
 
-| Host | Result |
+### 🔴 B — Next.js, or the existing Vite project?
+
+| Option | Consequence |
 | --- | --- |
-| `registry.npmjs.org` | ✅ 200 |
-| `fonts.googleapis.com` | ✅ 200 |
-| `fonts.gstatic.com` | ✅ reachable |
-| `images.unsplash.com` | ❌ blocked |
-| `images.pexels.com` | ❌ blocked |
-| `cdn.pixabay.com` | ❌ blocked |
-| `api.fontshare.com` | ❌ blocked |
-| `api.getlayers.ai` (the repo's own hero bucket) | ❌ blocked |
+| **B1. New Next.js app in this repo** ⭐ | `apps/maison-velor/` — App Router, TS strict, Tailwind 4. Manoj Dev and Lumora untouched and still working. Follows the brief's mandated stack. Cost: two build systems in one repo. |
+| B2. Third entry in the existing Vite app | Reuses everything immediately, but contradicts the mandated stack, and SPA routing is worst at exactly what we need — filter params, per-product metadata, sitemaps. |
+| B3. Migrate the whole repo to Next.js | Cleanest end state; rebuilds two finished sites for no user-facing gain. |
 
-Two consequences. First, **the existing site's hero photography does not load in
-this environment** — its asset bucket is unreachable. Second, the brief's allowed
-stock sources (Unsplash, Pexels, Pixabay) are all unusable from here.
+**Recommend B1.**
 
-The brief forbids inventing image URLs, using broken URLs, and shipping placeholders
-in the final result. So imagery must be **generated and committed to the repo**.
-This session has a Higgsfield image-generation MCP server available, which can do
-that — but generating a full boutique image set consumes the user's credits, so it
-is **Decision D** and needs explicit approval.
+### 🟠 C — Where does it live?
 
-### 7.3 🟠 MEDIUM — Next.js vs. the existing Vite project
+**Recommend C1: `apps/maison-velor/` in this repo.** I am scoped to `manojx12/lumora`
+and instructed to push only to `claude/compassionate-cannon-nx3443`. A separate repo
+(C2) is cleaner conceptually but needs you to create it and grant access.
 
-The brief mandates Next.js; the repo is a working, tested Vite app with a design
-system, unit tests and a Playwright suite. Reconciling these is **Decision B**.
+### 🟠 D — Imagery
 
-### 7.4 🟠 MEDIUM — None of the named skills exist in this session
+**Recommend D1: generate originals via the Higgsfield MCP**, which is available in this
+session. Fully original, on-brand, committed to the repo, no licensing question.
+**It spends your credits**, so Phase 1 will present the complete prompt set and an
+image count for approval, and generate nothing until you say go. D2 — you supply the
+photography — costs nothing and is more authentic if you have it.
 
-I checked. Enabled skills are: `llm-council`, `import-memory`, `humanizer`,
-`morning`, `skill-creator`, `xlsx`, `pptx`, `pdf`, `docx`. Enabled plugins: **none**.
+### 🟡 E — Boutique category
 
-**gstack, RuFlo, UI/UX Pro Max, taste-skill, Ponytail, Vercel Web Interface
-Guidelines and 21st.dev are not available here.** I will apply their *principles* —
-the quality bar, the review discipline, the accessibility and performance rules —
-but I cannot invoke them as tools, and I will not pretend to have run them.
+**Recommend: contemporary jewellery and small leather goods.**
 
-### 7.5 🟠 MEDIUM — Motion + React 19 + Lenis interaction
+The new material strengthens this. The reference's IA is a **Places → People → Objects**
+triad — origins, makers, named pieces (The Rabbit Keeper, The Guardian, The Fox Spirit,
+The Elder; Object I, III, V, VI). That maps almost one-to-one onto
+**ateliers → goldsmiths → numbered pieces**, which is how a jewellery maison actually
+talks about itself. Small catalogue, editorial pacing, real substance in the materials
+and care copy, and small objects are what generative imagery handles best.
 
-Adding Motion alongside the existing `@react-spring/web` and `spring-text-engine`
-means two animation runtimes in one bundle. Recommendation: migrate fully to Motion
-and remove react-spring, rather than running both. Also relevant: dropping Lenis
-(change #4 in §4) removes a rAF loop that would otherwise compete with Motion's.
+Now-stronger alternative if you prefer: **collectible design objects / objets d'art** —
+an even closer fit to the reference's "named sculptural piece" framing.
 
-### 7.6 🟡 LOW — Pinned sections and mobile
+### 🆕 🟠 F — Motion architecture: Motion.dev vs. the one-scalar CSS contract
 
-Pinned, viewport-multiple sequences are the most common source of mobile scroll jank
-and iOS Safari viewport-unit bugs. Budget of two, `dvh` units, and reduced-motion
-fallbacks that unpin entirely.
+This decision did not exist in revision 1. The PDF surfaces a direct tension with the
+brief's mandated stack:
 
-### 7.7 🟡 LOW — Container is ephemeral
+> *"a faithful reimplementation needs a scroll-progress writer, not a per-element
+> animation rig"* … *"Keep the CSS-derives-from-one-scalar contract when porting to
+> React or Nuxt — it survives the framework move intact and is what keeps the runtime
+> small."*
 
-Nothing survives except what is committed and pushed. `node_modules` is currently
-absent and will need a clean install. Every phase ends with a commit.
+The brief mandates Motion. The reference's load-bearing finding says scroll motion
+should *not* live in an animation library.
 
----
-
-## 8. Decisions requiring your approval
-
-Five. The rest I will decide myself and log in `docs/DECISIONS.md`, per the ADHD
-decision principle in the brief.
-
----
-
-### 🔴 DECISION A — How do we proceed without the reference?
-
-The PDF and screenshots never reached this session, and the live site is blocked.
-
-| Option | What happens |
+| Option | Consequence |
 | --- | --- |
-| **A1. Re-supply the reference** *(recommended)* | You attach the PDF and/or screenshots. I re-run Phase 0's composition analysis properly and produce a genuine section-by-section map. Highest fidelity to your stated goal. |
-| **A2. Proceed on the quoted mechanics alone** | I build MAISON VELOR on the §2.3 numbers — timing ladder, stagger, parallax unit, wipes, pinning — and design the composition originally. Honest, deliverable, but "close recreation of composition" becomes "shared motion discipline, original composition." |
-| **A3. Allowlist the reference domain** | If the egress policy can be widened to `theobsidianassembly.com`, I can analyse the live site directly. |
+| **F1. Hybrid** ⭐ | **One-scalar CSS for everything scroll-driven** — one rAF writer sets `--progress` per section, CSS `calc()` derives transforms, offsets and radii. **Motion for everything discrete** — overlays, page transitions, split-text orchestration, layout animation, gestures, cart/wishlist feedback. Honours both the brief and the evidence. Smallest runtime. |
+| F2. Motion for everything | Simpler mental model; discards the single most valuable transferable finding and puts per-element scroll animation back on the main thread. |
+| F3. No Motion at all | Closest to the reference; contradicts the brief's mandated stack for no real gain on the discrete interactions, where Motion is genuinely good. |
 
-**Recommendation: A1**, or A1 + A3. If neither is convenient, **A2 is a perfectly
-good project** — but I want you to choose it knowingly rather than discover later
-that I was working blind.
-
----
-
-### 🔴 DECISION B — Next.js, or the existing Vite project?
-
-| Option | What happens |
-| --- | --- |
-| **B1. New Next.js app in this repo** *(recommended)* | MAISON VELOR gets its own Next.js app (App Router, TS strict, Tailwind 4, Motion). Manoj Dev and Lumora stay untouched and keep working. Port the adaptive-grid maths and motion primitives across. Follows the brief exactly. Cost: two build systems in one repo. |
-| **B2. Build MAISON VELOR in the existing Vite app** | A third entry alongside `index.html` and `lumora.html`. Reuses everything immediately, no new build system. **But it contradicts the brief's mandated stack**, and multi-route commerce with filters, search params and SEO is exactly what Vite SPA routing is worst at. |
-| **B3. Migrate the whole repo to Next.js** | One stack, cleanest end state. But it means rebuilding two finished, tested sites for no user-facing gain. I do not recommend spending the effort here. |
-
-**Recommendation: B1.** The brief's stack requirement is explicit, and product
-catalogues with filtering, per-product metadata and sitemaps genuinely want a
-framework with routing and SSR.
-
----
-
-### 🟠 DECISION C — Where does MAISON VELOR live?
-
-The repo is named `Lumora` and the package is `manoj-dev`. MAISON VELOR is a third,
-unrelated brand.
-
-| Option | What happens |
-| --- | --- |
-| **C1. Subdirectory of this repo** *(recommended)* | `apps/maison-velor/`. Keeps everything in the approved branch. Some naming awkwardness. |
-| **C2. Its own repository** | Cleanest conceptually — but I am scoped to `manojx12/lumora` and instructed to push only to `claude/compassionate-cannon-nx3443`. Needs you to create the repo and grant access. |
-
-**Recommendation: C1**, unless you want it as a standalone portfolio piece, in which
-case C2 is worth the setup.
-
----
-
-### 🟠 DECISION D — Imagery
-
-Stock CDNs are blocked (§7.2) and the brief forbids placeholders in the final result.
-
-| Option | What happens |
-| --- | --- |
-| **D1. Generate original imagery via the Higgsfield MCP** *(recommended)* | Fully original, on-brand, committed to the repo, no licensing question. **Consumes your Higgsfield credits.** Phase 1 would first present the prompt set and an image count for your approval before generating anything. |
-| **D2. You supply the images** | You provide the boutique photography; I build to it. Zero credit cost, highest authenticity. |
-| **D3. Phase 1 delivers prompts only, build uses committed placeholders** | Cheapest. Final result stays unfinished until images arrive — which the brief explicitly disallows for the polished deliverable. |
-
-**Recommendation: D1**, with an explicit approval step on the prompt set and count
-before a single credit is spent.
-
----
-
-### 🟡 DECISION E — Boutique category
-
-Phase 1 must recommend one. My inclination, stated now so you can redirect early:
-**contemporary jewellery and small leather goods**. Small product count suits an
-editorial catalogue; small objects photograph well at the scale generative imagery
-handles best; material and care copy carries real substance.
-
-Alternatives if you prefer: contemporary womenswear, or multi-brand luxury
-accessories. Say the word in your Gate 0 reply and Phase 1 will build to it.
-
----
-
-## 9. Recommended V1 scope
-
-Assuming B1 + C1 + D1.
-
-| Phase | Deliverable |
-| --- | --- |
-| 1 | Creative direction — identity, palette, type, category, imagery prompts, section map, 3D proposal |
-| 2 | `docs/DESIGN.md` — tokens, grid, motion tokens, responsive tokens |
-| 2.5 | IA — routes, data model, state model |
-| 3 | `docs/ARCHITECTURE.md` + Next.js scaffold, fonts, tokens, layout, navigation |
-| 4 | Homepage hero (desktop then responsive) |
-| 5 | Homepage editorial sections |
-| 6 | Catalogue — grid, filter, sort, search |
-| 7 | Product detail |
-| 8 | Cart, wishlist, checkout UI |
-| 9 | Account, remaining routes |
-| 10 | Motion polish |
-| 11 | Accessibility + performance |
-| 12 | Browser QA at 375×812, 768×1024, 1440×900 and a large desktop |
-| 13 | Final visual polish |
-
-Every phase ends with a commit and a resume block per §26 of the brief.
+**Recommend F1, and I intend to proceed on it unless you say otherwise** — it is
+reversible and blocking Phase 1 on it would waste a gate.
 
 ---
 
 ## 10. Resume block
 
 ```
-CURRENT PHASE:            Phase 0 — Reference & Project Audit
+CURRENT PHASE:            Phase 0 — Reference & Project Audit (revision 2)
 STATUS:                   Complete. Awaiting Gate 0 approval.
-COMPLETED:                Repo audit; stack/dependency audit; design-system and
-                          motion-primitive inventory; network egress audit; skill
-                          availability audit; reference-evidence provenance
-                          assessment; transferable-mechanics translation; IA
-                          proposal; risk register; five decisions raised.
-FILES CHANGED:            docs/reference-audit.md (new). No application code.
-COMMANDS RUN:             git status/branch/log; find; cat; node -v; npm -v;
-                          curl reachability checks; ListSkills; ListPlugins;
-                          WebSearch + WebFetch (reference — blocked).
+COMPLETED:                Full read of both reference documents (9pp PDF + UI
+                          guidance MD). Repo, stack, token, motion and network
+                          audit. Reconciliation of the two documents' conflicting
+                          token exports, resolving all three P0 blockers and
+                          correcting the accent-contrast finding. Section-by-section
+                          reference-to-MAISON-VELOR mapping. IA, state and product
+                          model proposals. Risk register. Six decisions raised.
+FILES CHANGED:            docs/reference-audit.md (rewritten). No application code.
+COMMANDS RUN:             git; find; cat; node/npm -v; curl egress probes;
+                          ListSkills; ListPlugins; python venv + pypdf extraction.
 TESTS PASSED:             None run. node_modules absent; no code changed.
-KNOWN ISSUES:             Reference PDF/screenshots absent; live reference blocked
-                          by egress proxy; stock-image CDNs blocked; named skills
+KNOWN ISSUES:             No reference screenshots (geometry known, pixels not).
+                          Stock-image CDNs and Fontshare blocked. Named skills
                           (gstack, RuFlo, taste-skill, Ponytail, 21st.dev,
-                          UI/UX Pro Max) not available in this session.
-DECISIONS MADE:           None binding. Five raised for approval (A–E).
+                          UI/UX Pro Max) unavailable in this session.
+DECISIONS MADE:           Non-blocking, logged: drop Lenis for MAISON VELOR; drop
+                          the vw root-font technique (A18/A19 risk); adopt the dual
+                          12/24 grid (reversing revision 1); adopt the guidance's
+                          A1-A24 as the accessibility spec.
 NEXT ACTION:              Await Gate 0 approval, then Phase 1 — MAISON VELOR
                           creative direction.
-WAITING FOR USER APPROVAL: YES — Gate 0, plus Decisions A, B, C, D, E.
+WAITING FOR USER APPROVAL: YES — Gate 0, plus Decisions B, C, D, E, F.
 ```
