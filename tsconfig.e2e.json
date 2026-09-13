@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    /* page.evaluate callbacks are compiled here but execute in the browser,
+       so this project needs both the Node and DOM lib. */
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.e2e.tsbuildinfo"
+  },
+  "include": ["tests/e2e"]
+}
