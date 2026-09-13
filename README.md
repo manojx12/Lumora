@@ -1,6 +1,16 @@
 # Lumora
 
-Marketing site for **Lumora — Independent Design & Engineering Studio**.
+Two sites sharing one design system, built as a single Vite project:
+
+| Page | Entry | What it is |
+| --- | --- | --- |
+| Studio landing page | `index.html` → `/` | **Lumora — Independent Design & Engineering Studio** |
+| Personal portfolio | `portfolio.html` → `/portfolio.html` | A portrait-led portfolio on the same design language |
+
+Both draw on the same tokens, primitives, hooks and motion, so a change to the
+design system lands on both.
+
+## The studio site
 
 A single-page, light-palette landing site built on a rem-based adaptive grid: near-white
 surfaces punctuated by near-black ink cards and one burnt-orange accent. It opens with a
@@ -51,16 +61,36 @@ src/
     ui/            Shared primitives — PillButton, Eyebrow, TagChip, Reveal, LineReveal, Shell
     hero/          Hero, LiquidReveal canvas, HeroCard carousel, Partners
     icons.tsx      Inline SVGs, sized in em and inheriting currentColor
-    *.tsx          One file per page section, plus the loader and the two overlays
+    *.tsx          Studio sections, plus the loader, header and the two overlays.
+                   The loader, header, nav and modal take their copy as props, so
+                   the portfolio reuses them rather than cloning them.
+  portfolio/
+    content.ts     EVERY word and link on the portfolio — the only file to edit
+    components/    Portfolio sections, built from the same primitives
+    App.tsx        Composes the page and hands the chrome its copy
   context/         UI state: the intro gate, nav overlay and request modal
   hooks/           useHoverState, useInView, useClock, useAdaptiveGrid, useEscapeKey…
   lib/             Pure logic: adaptive grid, easings, formatting, cover geometry, scroll
-  data/content.ts  All copy and section content
+  data/content.ts  Studio copy and section content
+public/portrait/   Hero portrait pair (placeholders — replace them, see docs/)
+docs/              hero-image-prompts.md — how to make the hero portrait pair
 tests/
   unit/            Vitest — pure logic and component behaviour
-  e2e/             Playwright — loader, overlays, carousel, count-up, adaptive grid
-standalone/        A dependency-free single-file build of the same page
+  e2e/             Playwright — both pages: loader, overlays, carousel, count-up, grid
+standalone/        A dependency-free single-file build of the studio page
 ```
+
+## Making the portfolio yours
+
+1. Edit `src/portfolio/content.ts` — name, role, headline, projects, experience,
+   stats, links. Nothing else needs touching.
+2. Replace `public/portrait/base.png` and `public/portrait/reveal.png` with your
+   own portrait pair. **Read `docs/hero-image-prompts.md` first** — the hero wipes
+   between the two images, so they must share identical framing and dimensions.
+3. Update the `<title>` and description in `portfolio.html`.
+
+The shipped portraits are generated placeholders, there so the page builds and the
+reveal is visible before you supply your own.
 
 ## How it fits together
 
@@ -85,8 +115,8 @@ both overlays call `stopScroll()`/`startScroll()`, which pause Lenis and pin `<h
 
 ## Notes
 
-- The request modal's submit is **a stub**. It shows a success state after a short delay and
-  sends nothing anywhere — there is no backend in this project.
+- The request/contact modal's submit is **a stub** on both pages. It shows a success state
+  after a short delay and sends nothing anywhere — there is no backend in this project.
 - Hero photography is loaded from a public asset bucket; see `src/lib/constants.ts`. Note
   the deliberate crossover there: the file named `after.jpg` is the always-visible base
   layer, and `before.jpg` is the one painted under the cursor.

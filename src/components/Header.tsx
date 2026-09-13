@@ -34,7 +34,12 @@ function NavButton({ item, onSelect }: { item: NavItem; onSelect: (item: NavItem
   );
 }
 
-export function Header() {
+interface HeaderProps {
+  brand?: string;
+  navItems?: NavItem[];
+}
+
+export function Header({ brand = 'Lumora', navItems = NAV_ITEMS }: HeaderProps = {}) {
   const { ready, openMenu, openModal } = useUI();
   const { time, date } = useClock();
   const [brandHovered, brandBindings] = useHoverState();
@@ -57,19 +62,19 @@ export function Header() {
   return (
     <animated.header style={headerStyle} className="absolute inset-x-0 top-0 z-50">
       <Shell className="flex items-center justify-between gap-6 p-5 sm:px-8 sm:py-6">
-        <button onClick={() => scrollToId('home')} aria-label="Lumora — back to top" {...brandBindings}>
+        <button onClick={() => scrollToId('home')} aria-label={`${brand} — back to top`} {...brandBindings}>
           <animated.span
             style={brandStyle}
             className="flex items-center gap-2 text-lg font-semibold tracking-[-0.01em]"
           >
             <LogoMark className="text-xl text-accent" />
-            Lumora
+            {brand}
           </animated.span>
         </button>
 
         <nav aria-label="Primary" className="hidden lg:flex">
           <ul className="flex items-center gap-8 text-sm font-medium">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <li key={item.label}>
                 <NavButton item={item} onSelect={handleSelect} />
               </li>

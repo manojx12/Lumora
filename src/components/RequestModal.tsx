@@ -3,12 +3,13 @@ import { useState, type FormEvent } from 'react';
 import { LogoMark, XMark } from './icons';
 import { PillButton } from './ui/PillButton';
 import { SPRING } from '../lib/constants';
+import { DEFAULT_REQUEST_COPY, type RequestModalCopy } from '../lib/requestCopy';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useUI } from '../context/ui-context';
 
 type Status = 'idle' | 'submitting' | 'sent';
 
-export function RequestModal() {
+export function RequestModal({ copy = DEFAULT_REQUEST_COPY }: { copy?: RequestModalCopy } = {}) {
   const { modalOpen, closeModal } = useUI();
 
   useEscapeKey(modalOpen, closeModal);
@@ -42,14 +43,14 @@ export function RequestModal() {
           >
             <XMark />
           </button>
-          <ModalBody onDone={closeModal} />
+          <ModalBody copy={copy} onDone={closeModal} />
         </animated.div>
       </div>
     ) : null,
   );
 }
 
-function ModalBody({ onDone }: { onDone: () => void }) {
+function ModalBody({ copy, onDone }: { copy: RequestModalCopy; onDone: () => void }) {
   const [status, setStatus] = useState<Status>('idle');
 
   // Submission is intentionally a stub — there is no backend behind this form.
@@ -68,10 +69,8 @@ function ModalBody({ onDone }: { onDone: () => void }) {
         <div className="grid size-14 place-items-center rounded-pill bg-ink text-2xl text-accent-from">
           <LogoMark />
         </div>
-        <h2 className="text-2xl font-semibold">Request received</h2>
-        <p className="max-w-[32ch] text-sm text-foreground/60">
-          Thanks for reaching out — we&apos;ll get back to you within one business day.
-        </p>
+        <h2 className="text-2xl font-semibold">{copy.successTitle}</h2>
+        <p className="max-w-[32ch] text-sm text-foreground/60">{copy.successBody}</p>
         <PillButton variant="dark" onClick={onDone}>
           Close
         </PillButton>
@@ -84,11 +83,9 @@ function ModalBody({ onDone }: { onDone: () => void }) {
       <div className="mb-6 flex flex-col gap-1.5">
         <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground/60">
           <i className="block size-1.5 rounded-pill bg-accent" />
-          Start a project
+          {copy.kicker}
         </span>
-        <h2 className="text-2xl font-semibold tracking-[-0.01em] sm:text-3xl">
-          Tell us what you&apos;re building.
-        </h2>
+        <h2 className="text-2xl font-semibold tracking-[-0.01em] sm:text-3xl">{copy.heading}</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -104,19 +101,14 @@ function ModalBody({ onDone }: { onDone: () => void }) {
             autoComplete="email"
           />
         </Field>
-        <Field label="Project">
-          <textarea
-            name="project"
-            rows={4}
-            required
-            placeholder="A few words about your project, timeline, and budget."
-          />
+        <Field label={copy.projectLabel}>
+          <textarea name="project" rows={4} required placeholder={copy.projectPlaceholder} />
         </Field>
 
         <div className="mt-2 flex items-center justify-between gap-4">
-          <span className="text-xs text-foreground/45">We reply within one business day.</span>
+          <span className="text-xs text-foreground/45">{copy.note}</span>
           <PillButton variant="dark" withArrow arrow="up-right" type="submit">
-            {status === 'submitting' ? 'Sending…' : 'Send request'}
+            {status === 'submitting' ? 'Sending…' : copy.submitLabel}
           </PillButton>
         </div>
       </form>

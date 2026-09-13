@@ -9,7 +9,18 @@ import { useClock } from '../hooks/useClock';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useUI } from '../context/ui-context';
 
-export function NavMenu() {
+interface NavMenuProps {
+  brand?: string;
+  navItems?: NavItem[];
+  /** Label on the closing call to action. */
+  ctaLabel?: string;
+}
+
+export function NavMenu({
+  brand = 'Lumora',
+  navItems = NAV_ITEMS,
+  ctaLabel = 'Start a project →',
+}: NavMenuProps = {}) {
   const { menuOpen, closeMenu, openModal } = useUI();
   const { time, live } = useClock();
 
@@ -41,7 +52,7 @@ export function NavMenu() {
         <Shell className="flex items-center justify-between p-5 sm:px-8 sm:py-6">
           <div className="flex items-center gap-2 text-lg font-semibold">
             <LogoMark className="text-xl text-accent-from" />
-            Lumora
+            {brand}
           </div>
           <button
             onClick={closeMenu}
@@ -54,7 +65,7 @@ export function NavMenu() {
 
         <Shell as="nav" aria-label="Menu" className="flex flex-1 flex-col justify-center px-5 sm:px-8">
           <ul className="flex flex-col gap-1">
-            {NAV_ITEMS.map((item, index) => (
+            {navItems.map((item, index) => (
               <li key={item.label}>
                 <MenuItem item={item} index={index} onSelect={handleSelect} />
               </li>
@@ -71,7 +82,7 @@ export function NavMenu() {
             }}
             className="text-white/70 hover:text-white hover:underline"
           >
-            Start a project →
+            {ctaLabel}
           </button>
         </Shell>
       </animated.div>

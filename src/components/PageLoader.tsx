@@ -6,11 +6,19 @@ import { loaderProgress, padProgress } from '../lib/easing';
 import { startScroll, stopScroll } from '../lib/scroll';
 import { useUI } from '../context/ui-context';
 
+interface PageLoaderProps {
+  brand?: string;
+  tagline?: string;
+}
+
 /**
  * Full-screen intro. Counts 000 → 100, then slides away and releases the
  * `ready` flag every above-the-fold reveal waits on.
  */
-export function PageLoader() {
+export function PageLoader({
+  brand = 'Lumora',
+  tagline = 'Bold ideas, shipped with quiet precision.',
+}: PageLoaderProps = {}) {
   const { setReady } = useUI();
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
@@ -64,11 +72,9 @@ export function PageLoader() {
       <animated.div style={contentStyle} className="flex flex-col items-center gap-5 text-center">
         <div className="flex items-center gap-2 text-2xl font-semibold sm:text-3xl">
           <LogoMark className="text-3xl text-accent-from" />
-          Lumora
+          {brand}
         </div>
-        <p className="max-w-[24ch] text-sm text-white/55">
-          Bold ideas, shipped with quiet precision.
-        </p>
+        <p className="max-w-[24ch] text-sm text-white/55">{tagline}</p>
       </animated.div>
 
       <div className="flex w-[min(22rem,72vw)] flex-col gap-3">
